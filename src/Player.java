@@ -59,6 +59,11 @@ class Player extends Entity {
                 states |= IS_GROUNDED; // Sets the IS_GROUNDED flag
             } else {
                 position.y++; // Fall down
+                for (Enemy enemy : _LvLManager.enemies) {
+                    if (position.x == enemy.position.x && position.y == enemy.position.y) {
+                        enemy.TakeDamage();
+                    }
+                }
             }
         }
 
@@ -121,10 +126,15 @@ class Player extends Entity {
 
         for (Enemy enemy : _LvLManager.enemies) {
             if (position.x == enemy.position.x && position.y == enemy.position.y) {
-                health--;
+                TakeDamage();
             }
         }
-        
+        for (Projectile projectile : _LvLManager.projectiles) {
+            if (position.x == projectile.position.x && position.y == projectile.position.y) {
+                TakeDamage();
+            }
+        }
+
         if (health < 0){
             _LvLManager.LvLFinished();
         }

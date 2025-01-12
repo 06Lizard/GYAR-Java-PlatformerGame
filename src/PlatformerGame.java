@@ -154,6 +154,9 @@ class PlatformerGame {
             cameraPos.x = (short) (player.position.x - CAMERA_RIGHT_BOUND);
         }
 
+        // TMP
+        cameraPos.y = 1;
+
         cameraPos.x = (short) Math.max(0, Math.min(cameraPos.x, _LvLManager.width - LvLManager.screenWidth));
     }
 }

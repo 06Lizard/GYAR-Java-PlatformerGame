@@ -56,7 +56,7 @@ class LvLManager
 	public void Initzialize(){
         score = 0;
         lvl = 0;
-        LvL0();
+        LoadLvL();
     }
 	public void ResetLvL(){
         LoadLvL();
@@ -146,6 +146,11 @@ class LvLManager
 
 // private
 	private void LoadLvL(){
+        // Clear up before writing to avoid memory leaks
+        mapp.clear();
+        projectiles.clear();
+        enemies.clear();
+
         switch (lvl) {
             case 0: LvL0(); break;
             case 1: LvL1(); break;
@@ -155,9 +160,6 @@ class LvLManager
     }
 	private void GameWon(){ running = false; }
 	public void LvL0() {
-        // Clear up before writing to avoid memory leaks
-        mapp.clear();
-
         // Set size of mapp (a List of Lists of Blocks)
         for (int i = 0; i < width; i++) {
             mapp.add(new ArrayList<>());
