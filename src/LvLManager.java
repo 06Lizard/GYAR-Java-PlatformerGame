@@ -1,5 +1,4 @@
 import java.util.List;
-import java.util.Scanner;
 import java.util.ArrayList;
 import java.awt.Toolkit;
 
@@ -81,9 +80,7 @@ class LvLManager
             e.printStackTrace();
         }   
         // Get user input (waiting for key press to continue)
-        Scanner scanner = new Scanner(System.in);
-        System.out.println("Press Enter to continue...");
-        scanner.nextLine();    
+        KeyPressUtils.waitForAnyKey();
     }
     public void Update(){
         // only update enemies on the screen
@@ -138,7 +135,10 @@ class LvLManager
     }
     public void addProjectile(short x, short y, boolean isRight){
         projectiles.add(new Projectile(x, y, isRight, getHandle()));
-    }    
+    }
+    public void setPlayer(Player player){
+        this.player = player;
+    }
 
 	LvLManagerHandle getHandle() {
 		return handle;
