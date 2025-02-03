@@ -1,19 +1,16 @@
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-
 class PlatformerGame {
 // private
     private static final short CAMERA_LEFT_BOUND = (short) 10;
     private static final short CAMERA_RIGHT_BOUND = LvLManager.screenWidth - (short) 10;
 
-	private boolean running = true;
+	private BoolWrapper running = new BoolWrapper(true);
 
 	private Player player;
 	private Position cameraPos = new Position();	
 	private LvLManager _LvLManager;
 
 // public
-    public PlatformerGame(){        
+    public PlatformerGame(){
         _LvLManager = new LvLManager(running, cameraPos, null);
         player = new Player((short) 10, (short) 10, _LvLManager);
         _LvLManager.setPlayer(player);
@@ -23,8 +20,7 @@ class PlatformerGame {
         System.out.print("\033[0m" + // reset formating
             "\033[?25l"); // hide cursor
 
-        //Menue();        
-        GameLoop();
+        Menue();        
 
         // thanks for playing
         System.out.println("\033[2J\033[0m\033[3;5H Thanks for playing");
@@ -32,52 +28,8 @@ class PlatformerGame {
 
 // private
     // this thing is so cursed
-    public void Menue() {
-        class MenuKeyListener implements KeyListener {
-            public boolean upPressed = false;
-            public boolean downPressed = false;
-            public boolean enterPressed = false;
-        
-            @Override
-            public void keyTyped(KeyEvent e) {}
-        
-            @Override
-            public void keyPressed(KeyEvent e) {
-                int keyCode = e.getKeyCode();
-                if (keyCode == KeyEvent.VK_W || keyCode == KeyEvent.VK_UP) {
-                    upPressed = true;
-                }
-                if (keyCode == KeyEvent.VK_S || keyCode == KeyEvent.VK_DOWN) {
-                    downPressed = true;
-                }
-                if (keyCode == KeyEvent.VK_ENTER) {
-                    enterPressed = true;
-                }
-            }
-        
-            @Override
-            public void keyReleased(KeyEvent e) {
-                int keyCode = e.getKeyCode();
-                if (keyCode == KeyEvent.VK_W || keyCode == KeyEvent.VK_UP) {
-                    upPressed = false;
-                }
-                if (keyCode == KeyEvent.VK_S || keyCode == KeyEvent.VK_DOWN) {
-                    downPressed = false;
-                }
-                if (keyCode == KeyEvent.VK_ENTER || keyCode == KeyEvent.VK_SPACE) {
-                    enterPressed = false;
-                }
-            }
-        }
-        MenuKeyListener keyListener = new MenuKeyListener();
+    public void Menue() {        
         boolean menueLoop = true;
-
-        // register the key listener
-        java.awt.Frame dummyFrame = new java.awt.Frame(); // Create a dummy frame to attach the KeyListener
-        dummyFrame.addKeyListener(keyListener);
-        dummyFrame.setVisible(true);
-        dummyFrame.setFocusable(true);
-
         while (menueLoop) {
             boolean optionLoop = true;
             boolean menuOption = true;
@@ -85,7 +37,7 @@ class PlatformerGame {
             System.out.print("\033[2J\033[3;6HPlatformerGame\033[4;6H StartGame \033[5;6H Quit ");
 
             // press any key to start the game
-            KeyPressUtils.waitForAnyKey();
+            User32.waitForAnyKey();
 
             while (optionLoop) {
                 try {
@@ -96,20 +48,19 @@ class PlatformerGame {
 
                 System.out.print("\033[2J\033[3;6HPlatformerGame\033[4;6H"
                     + (menuOption ? "<StartGame>" : " StartGame ")
-                    + "\033[5;6H "
+                    + "\033[5;6H"
                     + (!menuOption ? "<Quit>" : " Quit "));
 
-                // toggle menu option on 'W', 'S', 'UP', or 'DOWN'
-                if (keyListener.upPressed || keyListener.downPressed) {
-                    menuOption = !menuOption; // toggle menu option
-                    keyListener.upPressed = false; // reset key state
-                    keyListener.downPressed = false; // reset key state
+                try {
+                    Thread.sleep(100);  // Wait 100 milliseconds before redrawing the menu
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
-                // start the game or quit on 'Enter' / 'Space'
-                if (keyListener.enterPressed) {
-                    optionLoop = false; // exit the option loop
-                    keyListener.enterPressed = false; // reset key state
-                }
+                 
+                if ((User32.isKeyPressed(User32.VK_W)) || (User32.isKeyPressed(User32.VK_S)) || (User32.isKeyPressed(User32.VK_UP)) || (User32.isKeyPressed(User32.VK_DOWN)))
+				    menuOption = !menuOption;
+			    if ((User32.isKeyPressed(User32.VK_RETURN)) || (User32.isKeyPressed(User32.VK_SPACE)))
+				    optionLoop = false;
             }
 
             if (menuOption) {
@@ -118,12 +69,10 @@ class PlatformerGame {
                 menueLoop = false;  // exit the menu if Quit is selected
             }
         }
-
-        dummyFrame.dispose(); // dispose of the dummy frame
     }
 	
     private void Initzialize(){
-        running = true;
+        running.state = true;
 
         // reset player
         player.Reset();
@@ -141,12 +90,12 @@ class PlatformerGame {
         Initzialize();
         DeltaTimeCounter deltaFrameCounter = new DeltaTimeCounter();
 
-        while (running) {
+        while (running.state) {
             //Render(); /*depricated*/
             OptimizedRender();
             Update();
             deltaFrameCounter.count();
-            deltaFrameCounter.display(1, 1, "Frame");
+            deltaFrameCounter.display(1, 1, "Frame");    	
 
             // try catch required in java
             try {

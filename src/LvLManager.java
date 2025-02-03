@@ -28,7 +28,7 @@ class LvLManager
 	private LvLManagerHandle handle;
 
 	private int TMP = 0;
-	private boolean runningRef;
+	private BoolWrapper runningRef;
 	private Position cameraPos;
 	private Player player;
 	private short lvl = 0;
@@ -45,7 +45,7 @@ class LvLManager
     public List<Projectile> projectiles = new ArrayList<>();    
     public List<List<Character>> mapp = new ArrayList<>(); // 2D vector of Block identifiers
 
-	public LvLManager(boolean running, Position cameraPos, Player player){
+	public LvLManager(BoolWrapper running, Position cameraPos, Player player){
         this.runningRef = running;
         this.cameraPos = cameraPos;
         this.player = player;        
@@ -65,7 +65,7 @@ class LvLManager
         ResetLvL();
     }
 	public void GameOver(){
-        runningRef = false;
+        runningRef.state = false;
         System.out.print("\033[2J\033[0m\033[3;5H Game Over\033[4;5H Score: " + score + "\033[5;5H Level: " + lvl); 
         // Make a beep sound (default system beep)
         Toolkit.getDefaultToolkit().beep(); 
@@ -76,7 +76,7 @@ class LvLManager
             e.printStackTrace();
         }   
         // Get user input (waiting for key press to continue)
-        KeyPressUtils.waitForAnyKey();
+        User32.waitForAnyKey();
     }
     public void Update(){
         // only update enemies on the screen
@@ -126,7 +126,7 @@ class LvLManager
         }
     }
 	private void GameWon(){
-        runningRef = false;
+        runningRef.state = false;
         System.out.print("\033[2J\033[0m\033[3;5H Game Won!\033[4;5H Score: " + score + "\033[5;5H Level: " + lvl); 
         // Make a beep sound (default system beep)
         Toolkit.getDefaultToolkit().beep(); 
@@ -137,7 +137,7 @@ class LvLManager
             e.printStackTrace();
         }   
         // Get user input (waiting for key press to continue)
-        KeyPressUtils.waitForAnyKey();
+        User32.waitForAnyKey();
     }
 
 	public void LvL0() {
