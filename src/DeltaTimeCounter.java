@@ -48,11 +48,14 @@ public class DeltaTimeCounter {
             // displays how far till valid sampleSize
             System.out.print("\033[" + y + ";" + x + "H\033[2KLoading " + whatCounting + ": " 
                 + validSamples + "/" + SAMPLE_SIZE + " samples");
-        } 
+        }
         else {
             // display deltaTime avrage (ms)
-            System.out.print("\033[" + y + ";" + x + "H\033[2KAverage " + whatCounting + " Time: "
-                + (averageDelta > 0.0 ? averageDelta * 1000.0 : 0.0) + " ms");
+            //System.out.print("\033[" + y + ";" + x + "H\033[2KAverage " + whatCounting + " Time: "
+            //    + (averageDelta > 0.0 ? averageDelta * 1000.0 : 0.0) + " ms");
+            // this version below only displays 3 decimal places
+            System.out.print("\033[" + y + ";" + x + "H\033[2KAverage " + whatCounting + " Time: " 
+                + String.format("%.3f", averageDelta * 1000.0) + " ms");
         }
     }
 

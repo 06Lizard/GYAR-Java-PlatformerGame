@@ -23,13 +23,15 @@ class PlatformerGame {
         System.out.print("\033[0m" + // reset formating
             "\033[?25l"); // hide cursor
 
-        Menue();        
+        //Menue();        
+        GameLoop();
 
         // thanks for playing
         System.out.println("\033[2J\033[0m\033[3;5H Thanks for playing");
     }
 
 // private
+    // this thing is so cursed
     public void Menue() {
         class MenuKeyListener implements KeyListener {
             public boolean upPressed = false;
@@ -141,14 +143,14 @@ class PlatformerGame {
 
         while (running) {
             //Render(); /*depricated*/
-            optimizedRender();
+            OptimizedRender();
             Update();
             deltaFrameCounter.count();
             deltaFrameCounter.display(1, 1, "Frame");
 
             // try catch required in java
             try {
-                Thread.sleep(25);  // eep for 25 milliseconds
+                Thread.sleep(50);  // eep for 50 milliseconds
             } catch (InterruptedException e) {
                 e.printStackTrace();  // handle interruption if necessary
             }
@@ -201,7 +203,7 @@ class PlatformerGame {
         // System.out.println("\033[25;20H Camera: " + cameraPos.x + "," + cameraPos.y + " Player: " + player.x + "," + player.y);
     }
     
-    public void optimizedRender() {
+    public void OptimizedRender() {
 	    // 1: populate/prepare the screenBuffer
         class DisplayElement {
             char texture;
@@ -222,7 +224,7 @@ class PlatformerGame {
                 DisplayElement element;
 
 			    // if not player's pos amend mapp
-                if (player.position.x != worldX || player.position.y != worldY) {
+                if (player.position.x != worldX || player.position.y != worldY) {                
                     char blockMask = _LvLManager.mapp.get(worldX).get(worldY);
                     if (blockMask != 0) {
                         char texture = BlockManager.getTexture(blockMask);

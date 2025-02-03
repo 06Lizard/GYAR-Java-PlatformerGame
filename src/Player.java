@@ -1,6 +1,3 @@
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-
 class Player extends Entity {
 // private
     private static final short _health = 3;
@@ -8,12 +5,6 @@ class Player extends Entity {
     private static final short _colour = Text.Formatting.RED.code;
     private static final boolean _collision = false;
     private LvLManager _LvLManager;
-
-    // track key states, required in java
-    private boolean upPressed = false;
-    private boolean leftPressed = false;
-    private boolean downPressed = false;
-    private boolean rightPressed = false;
 
 // public
     public Player(short x, short y, LvLManager _LvLManager)
@@ -101,21 +92,39 @@ class Player extends Entity {
         }
     }
 
+    /**
+     * Poll input asynchronously using the Windows API.
+     */
     private void Input() {
-        states &= ~0b00001111; // resets the movment state
-
-        if (upPressed) {
+        // Clear movement-related bits (lower nibble)
+        states &= ~0xF;  // Clear bits 0-3
+        
+        // Poll key states using our JNA wrapper:
+        // 0x57 = 'W', 0x26 = Up arrow, 0x41 = 'A', 0x25 = Left arrow,
+        // 0x53 = 'S', 0x28 = Down arrow, 0x44 = 'D', 0x27 = Right arrow
+        
+        if (isKeyPressed(0x57) || isKeyPressed(0x26)) {
             states |= UP;
         }
-        if (leftPressed) {
+        if (isKeyPressed(0x41) || isKeyPressed(0x25)) {
             states |= LEFT;
         }
-        if (downPressed) {
+        if (isKeyPressed(0x53) || isKeyPressed(0x28)) {
             states |= DOWN;
         }
-        if (rightPressed) {
+        if (isKeyPressed(0x44) || isKeyPressed(0x27)) {
             states |= RIGHT;
         }
+    }
+    
+    /**
+     * Helper function to wrap the GetAsyncKeyState call.
+     * @param keyCode the virtual key code.
+     * @return true if the key is currently pressed.
+     */
+    private boolean isKeyPressed(int keyCode) {
+        // The 0x8000 mask checks the high-order bit (the key is down)
+        return (User32.INSTANCE.GetAsyncKeyState(keyCode) & 0x8000) != 0;
     }
 
     private void Collision() {
@@ -139,50 +148,4 @@ class Player extends Entity {
             _LvLManager.LvLFinished();
         }
     }
-
-    // key listener
-    public class PlayerKeyListener implements KeyListener {
-
-        @Override
-        public void keyTyped(KeyEvent e) {}
-
-        @Override
-        public void keyPressed(KeyEvent e) {
-            int keyCode = e.getKeyCode();
-
-            // set flags on key presses
-            if (keyCode == KeyEvent.VK_W || keyCode == KeyEvent.VK_UP) {
-                upPressed = true;
-            }
-            if (keyCode == KeyEvent.VK_A || keyCode == KeyEvent.VK_LEFT) {
-                leftPressed = true;
-            }
-            if (keyCode == KeyEvent.VK_S || keyCode == KeyEvent.VK_DOWN) {
-                downPressed = true;
-            }
-            if (keyCode == KeyEvent.VK_D || keyCode == KeyEvent.VK_RIGHT) {
-                rightPressed = true;
-            }
-        }
-
-        @Override
-        public void keyReleased(KeyEvent e) {
-            int keyCode = e.getKeyCode();
-
-            // reset flags on key release
-            if (keyCode == KeyEvent.VK_W || keyCode == KeyEvent.VK_UP) {
-                upPressed = false;
-            }
-            if (keyCode == KeyEvent.VK_A || keyCode == KeyEvent.VK_LEFT) {
-                leftPressed = false;
-            }
-            if (keyCode == KeyEvent.VK_S || keyCode == KeyEvent.VK_DOWN) {
-                downPressed = false;
-            }
-            if (keyCode == KeyEvent.VK_D || keyCode == KeyEvent.VK_RIGHT) {
-                rightPressed = false;
-            }
-        }
-    }
-    // alternativly make move save the curent state of states to a tmp states and leting key listener continously update states seperately
 }
