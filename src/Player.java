@@ -1,19 +1,10 @@
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-
 class Player extends Entity {
 // private
-    private static final short _health = 3;
+    private static final short _health = 1;
     private static final char _texture = '#';
     private static final short _colour = Text.Formatting.RED.code;
     private static final boolean _collision = false;
     private LvLManager _LvLManager;
-
-    // track key states, required in java
-    private boolean upPressed = false;
-    private boolean leftPressed = false;
-    private boolean downPressed = false;
-    private boolean rightPressed = false;
 
 // public
     public Player(short x, short y, LvLManager _LvLManager)
@@ -31,7 +22,7 @@ class Player extends Entity {
 
     public void TakeDamage() { 
         health--; 
-        if (health < 0)
+        if (health <= 0)
             _LvLManager.GameOver();
         else _LvLManager.ResetLvL();
     }
@@ -100,20 +91,25 @@ class Player extends Entity {
             }
         }
     }
-
+    
+    // Poll input asynchronously using the Windows API.
     private void Input() {
-        states &= ~0b00001111; // resets the movment state
-
-        if (upPressed) {
+        states &= ~0b00001111; // Resets the movment state
+        
+        // Poll key states using our JNA wrapper:
+        // 0x57 = 'W', 0x26 = Up arrow, 0x41 = 'A', 0x25 = Left arrow,
+        // 0x53 = 'S', 0x28 = Down arrow, 0x44 = 'D', 0x27 = Right arrow
+        
+        if (User32.isKeyPressed(0x57) || User32.isKeyPressed(0x26)) {
             states |= UP;
         }
-        if (leftPressed) {
+        if (User32.isKeyPressed(0x41) || User32.isKeyPressed(0x25)) {
             states |= LEFT;
         }
-        if (downPressed) {
+        if (User32.isKeyPressed(0x53) || User32.isKeyPressed(0x28)) {
             states |= DOWN;
         }
-        if (rightPressed) {
+        if (User32.isKeyPressed(0x44) || User32.isKeyPressed(0x27)) {
             states |= RIGHT;
         }
     }
@@ -134,55 +130,5 @@ class Player extends Entity {
                 TakeDamage();
             }
         }
-
-        if (health < 0){
-            _LvLManager.LvLFinished();
-        }
     }
-
-    // key listener
-    public class PlayerKeyListener implements KeyListener {
-
-        @Override
-        public void keyTyped(KeyEvent e) {}
-
-        @Override
-        public void keyPressed(KeyEvent e) {
-            int keyCode = e.getKeyCode();
-
-            // set flags on key presses
-            if (keyCode == KeyEvent.VK_W || keyCode == KeyEvent.VK_UP) {
-                upPressed = true;
-            }
-            if (keyCode == KeyEvent.VK_A || keyCode == KeyEvent.VK_LEFT) {
-                leftPressed = true;
-            }
-            if (keyCode == KeyEvent.VK_S || keyCode == KeyEvent.VK_DOWN) {
-                downPressed = true;
-            }
-            if (keyCode == KeyEvent.VK_D || keyCode == KeyEvent.VK_RIGHT) {
-                rightPressed = true;
-            }
-        }
-
-        @Override
-        public void keyReleased(KeyEvent e) {
-            int keyCode = e.getKeyCode();
-
-            // reset flags on key release
-            if (keyCode == KeyEvent.VK_W || keyCode == KeyEvent.VK_UP) {
-                upPressed = false;
-            }
-            if (keyCode == KeyEvent.VK_A || keyCode == KeyEvent.VK_LEFT) {
-                leftPressed = false;
-            }
-            if (keyCode == KeyEvent.VK_S || keyCode == KeyEvent.VK_DOWN) {
-                downPressed = false;
-            }
-            if (keyCode == KeyEvent.VK_D || keyCode == KeyEvent.VK_RIGHT) {
-                rightPressed = false;
-            }
-        }
-    }
-    // alternativly make move save the curent state of states to a tmp states and leting key listener continously update states seperately
 }
