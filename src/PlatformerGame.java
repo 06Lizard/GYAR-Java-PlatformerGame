@@ -3,7 +3,7 @@ class PlatformerGame {
     private static final short CAMERA_LEFT_BOUND = (short) 10;
     private static final short CAMERA_RIGHT_BOUND = LvLManager.screenWidth - (short) 10;
 
-	private BoolWrapper running = new BoolWrapper(true);
+	private VarWrapper<Boolean> running = new VarWrapper<Boolean>(true);
 
 	private Player player;
 	private Position cameraPos = new Position();	

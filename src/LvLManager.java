@@ -27,8 +27,7 @@ class LvLManager
 // private
 	private LvLManagerHandle handle;
 
-	private int TMP = 0;
-	private BoolWrapper runningRef;
+	private VarWrapper<Boolean> runningRef;
 	private Position cameraPos;
 	private Player player;
 	private short lvl = 0;
@@ -45,7 +44,7 @@ class LvLManager
     public List<Projectile> projectiles = new ArrayList<>();    
     public List<List<Character>> mapp = new ArrayList<>(); // 2D vector of Block identifiers
 
-	public LvLManager(BoolWrapper running, Position cameraPos, Player player){
+	public LvLManager(VarWrapper<Boolean> running, Position cameraPos, Player player){
         this.runningRef = running;
         this.cameraPos = cameraPos;
         this.player = player;        
