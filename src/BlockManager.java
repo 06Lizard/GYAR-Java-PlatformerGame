@@ -16,11 +16,11 @@ class BlockManager
     }
 	public static char getTexture(final char block){
         switch (block) {
-            case ground:
+            case 'G':
                 return '=';
-            case flag:
+            case 'F':
                 return 'F';
-            case flagPole:
+            case 'f':
                 return '|';        
             default:
                 return ' ';
@@ -28,14 +28,14 @@ class BlockManager
     }
 	public static short getColour(final char block){
         switch (block) {
-            case ground:
-                return Text.Formatting.GREEN.code;
-            case flag:
-                return Text.Formatting.BRIGHT_RED.code;
-            case flagPole:
-                return Text.Formatting.GRAY.code;
+            case 'G':
+                return 0; //Text::Green;
+            case 'F':
+                return 0; //Text::BrightRed;
+            case 'f':
+                return 0; //Text::Gray;
             default:
-                return Text.Formatting.RESET_ALL.code;
+                return 0; //Text::ResetAll;
         }
     }
 };

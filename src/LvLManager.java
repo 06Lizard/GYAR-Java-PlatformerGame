@@ -1,4 +1,5 @@
 import java.util.List;
+import java.util.Scanner;
 import java.util.ArrayList;
 import java.awt.Toolkit;
 
@@ -28,7 +29,7 @@ class LvLManager
 	private LvLManagerHandle handle;
 
 	private int TMP = 0;
-	private BoolWrapper runningRef;
+	private boolean running;
 	private Position cameraPos;
 	private Player player;
 	private short lvl = 0;
@@ -45,8 +46,8 @@ class LvLManager
     public List<Projectile> projectiles = new ArrayList<>();    
     public List<List<Character>> mapp = new ArrayList<>(); // 2D vector of Block identifiers
 
-	public LvLManager(BoolWrapper running, Position cameraPos, Player player){
-        this.runningRef = running;
+	public LvLManager(boolean running, Position cameraPos, Player player){
+        this.running = running;
         this.cameraPos = cameraPos;
         this.player = player;        
         handle = new LvLManagerHandle(mapp);
@@ -65,18 +66,24 @@ class LvLManager
         ResetLvL();
     }
 	public void GameOver(){
-        runningRef.state = false;
-        System.out.print("\033[2J\033[0m\033[3;5H Game Over\033[4;5H Score: " + score + "\033[5;5H Level: " + lvl); 
+        // Clear the screen (ANSI escape sequence)
+        System.out.print("\033[2J\033[0m"); 
+        // Print the Game Over message with formatted positioning
+        System.out.println("\033[3;5H Game Over");
+        System.out.println("\033[4;5H Score: " + score);
+        System.out.println("\033[5;5H Level: " + lvl); 
         // Make a beep sound (default system beep)
         Toolkit.getDefaultToolkit().beep(); 
-        // Sleep for 3 seconds
+        // Sleep for half a second
         try {
-            Thread.sleep(3000);
+            Thread.sleep(500);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }   
         // Get user input (waiting for key press to continue)
-        User32.waitForAnyKey();
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Press Enter to continue...");
+        scanner.nextLine();    
     }
     public void Update(){
         // only update enemies on the screen
@@ -96,16 +103,42 @@ class LvLManager
             projectile.Update();  // Update projectiles
         }
     }
+    public void render() {
+        // Render enemies
+        for (Enemy enemy : enemies) {
+            int x = enemy.position.x;
+            int y = enemy.position.y;
+
+            // Check if enemy is within camera's view and not blocked by the map
+            if (cameraPos.x <= x && x < cameraPos.x + screenWidth &&
+                cameraPos.y <= y && y < cameraPos.y + screenHight && mapp.get(x).get(y) == 0) {
+                // Print the enemy at the calculated position with its color and texture
+                System.out.print("\033[" + (y - cameraPos.y + 1) + ";" + (x - cameraPos.x + 1) + "H\033[" +
+                        enemy.getColour() + "m" + enemy.getTexture());
+            }
+        }
+
+        // Render projectiles
+        for (Projectile projectile : projectiles) {
+            int x = projectile.position.x;
+            int y = projectile.position.y;
+
+            // Check if projectile is within camera's view and not blocked by the map
+            if (cameraPos.x <= x && x < cameraPos.x + screenWidth &&
+                cameraPos.y <= y && y < cameraPos.y + screenHight && mapp.get(x).get(y) == 0) {
+                // Print the projectile at the calculated position with its color and texture
+                System.out.print("\033[" + (y + 1) + ";" + (x + 1) + "H\033[" +
+                        projectile.getColour() + "m" + projectile.getTexture());
+            }
+        }
+    }
 
 	public void addEnemy(Enemy enemy){
         enemies.add(enemy);
     }
     public void addProjectile(short x, short y, boolean isRight){
         projectiles.add(new Projectile(x, y, isRight, getHandle()));
-    }
-    public void setPlayer(Player player){
-        this.player = player;
-    }
+    }    
 
 	LvLManagerHandle getHandle() {
 		return handle;
@@ -125,27 +158,13 @@ class LvLManager
             default: GameWon(); break;
         }
     }
-	private void GameWon(){
-        runningRef.state = false;
-        System.out.print("\033[2J\033[0m\033[3;5H Game Won!\033[4;5H Score: " + score + "\033[5;5H Level: " + lvl); 
-        // Make a beep sound (default system beep)
-        Toolkit.getDefaultToolkit().beep(); 
-        // Sleep for 3 seconds
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }   
-        // Get user input (waiting for key press to continue)
-        User32.waitForAnyKey();
-    }
-
+	private void GameWon(){ running = false; }
 	public void LvL0() {
         // Set size of mapp (a List of Lists of Blocks)
         for (int i = 0; i < width; i++) {
             mapp.add(new ArrayList<>());
             for (int j = 0; j < hight; j++) {
-                mapp.get(i).add(' ');  // Initialize with null, indicating empty space
+                mapp.get(i).add(null);  // Initialize with null, indicating empty space
             }
         }
 

@@ -19,7 +19,7 @@ class Enemy1 extends Enemy{
     @Override
     public void TakeDamage() {
         health--;
-        if (health <= 0)
+        if (health < 0)
             _LvLManagerHandle.removeEnemy(this);
     }
 

@@ -21,7 +21,7 @@ class Projectile extends Entity
 	public void Update(){
         health--;
         Move();
-        if (health <= 0)
+        if (health < 0)
         _LvLManagerHandle.removeProjectile(this);
 
     }
