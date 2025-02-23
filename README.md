@@ -11,6 +11,7 @@ to build up LvL's check out the functions LvL0 && LvL1 && LvL2 in LvLManager.cpp
 to add more enemies simply create a class and have it enherit from enemy.h as it's the base enemy
 
 (there is a slight problem with collition handleing atm alowwing player to phase through enemies sometimes) (player still can't kill enemies...)
+(also for some reason the enemies stop moving forever after going outside the screen once)
 
 ## Folder Structure
 
