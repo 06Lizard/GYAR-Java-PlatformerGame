@@ -94,8 +94,9 @@ class PlatformerGame {
             //Render(); /*depricated*/ // 6.28 ms
             OptimizedRender(); // 0.20 ms
             Update(); // 0.02 ms
-            deltaFrameCounter.count();
-            deltaFrameCounter.display(1, 1, "Frame");
+            
+            deltaFrameCounter.countAndDisplay(1, 1, "Frame");
+            //deltaFrameCounter.count(); deltaFrameCounter.display(1, 1, "Frame");
     		// the counter takes about 0.02 ms 	
 
             // try catch required in java
